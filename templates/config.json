@@ -6,9 +6,6 @@
   },
   "datacenter": "${consul_datacenter}",
   "data_dir": "/opt/consul/data",
-  "ports" : {
-    "dns" : 53
-  },
   "domain": "consul",
   "enable_script_checks": true,
   "dns_config": {
