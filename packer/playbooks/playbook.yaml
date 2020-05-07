@@ -1,0 +1,71 @@
+---
+# playbook.yml
+- name: "Install Consul"
+  hosts: default
+  become: true
+  vars:
+    consul_version: 1.7.3
+
+  tasks:
+  - name: Install unzip
+    apt:
+      update_cache: yes
+      name: unzip
+      state: latest
+
+  - name: Create Consul Group
+    group:
+      name: consul
+      state: present
+
+  - name: Create Consul User
+    user:
+      name: consul
+      state: present
+
+  - name: Download Consul Binary
+    get_url:
+      url: https://releases.hashicorp.com/consul/{{ consul_version }}+ent/consul_{{ consul_version }}+ent_linux_amd64.zip
+      dest: ./consul.zip
+      checksum: sha256:https://releases.hashicorp.com/consul/{{ consul_version }}+ent/consul_{{ consul_version }}+ent_SHA256SUMS
+
+  - name: Unpack Consul Binary
+    unarchive:
+      remote_src: yes
+      src: ./consul.zip
+      dest: /usr/local/bin/
+
+  - name: Set Consul Binary Owner
+    file:
+      path: /usr/local/bin/consul
+      owner: consul
+      group: consul
+      mode: +x
+
+  - name: Copy Consul systemd
+    copy:
+      src: ./consul.service
+      dest: /etc/systemd/system/consul.service
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Create Consul directory
+    file:
+      path: /etc/consul.d
+      state: directory
+      owner: consul
+      group: consul
+
+
+  - name: Create Consul Data Directory
+    file:
+      path: /opt/consul/data
+      state: directory
+      owner: consul
+      group: consul
+
+  - name: Disable consul Service
+    systemd:
+      name: consul
+      enabled: no

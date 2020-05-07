@@ -1,0 +1,19 @@
+#cloud-config
+packages:
+  - jq
+
+write_files:
+  - path: /etc/consul.d/config.json
+    content: ${consul_conf}
+    permissions: '0644'
+    owner: consul:consul
+    encoding: b64
+  - path: /etc/environment
+    content: |
+      ARM_SUBSCRIPTION=${arm_subscription_id}
+      ARM_TENANT=${arm_tenant_id}
+    append: true
+
+runcmd:
+  - systemctl enable consul
+  - systemctl restart consul
