@@ -7,6 +7,7 @@ ConditionFileNotEmpty=/etc/consul.d/config.json
 
 [Service]
 Type=simple
+EnvironmentFile=/etc/environment
 ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d/
 ExecReload=/usr/local/bin/consul reload
 User=consul

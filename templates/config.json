@@ -6,22 +6,13 @@
   },
   "datacenter": "${consul_datacenter}",
   "data_dir": "/opt/consul/data",
-  "ports" : {
-    "dns" : 53
-  },
-  "domain": "consul",
-  "enable_script_checks": true,
-  "dns_config": {
-      "enable_truncate": true,
-      "only_passing": true
-  },
   "enable_syslog": true,
   "leave_on_terminate": true,
   "log_level": "INFO",
   "rejoin_after_leave": true,
   "server": true,
   "retry_join": [
-      "resource_group=${resource_group} vm_scale_set=${vm_scale_set}"
+      "provider=azure resource_group=${resource_group} vm_scale_set=${vm_scale_set}"
   ],
   "ui": true
 }

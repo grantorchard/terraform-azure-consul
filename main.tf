@@ -63,9 +63,16 @@ resource azurerm_role_assignment "this" {
   principal_id       = azurerm_linux_virtual_machine_scale_set.this.identity[0].principal_id
 }
 
+data template_file "this" {
+  template = file("${path.module}/templates/config.json")
+  vars = {
+    consul_datacenter = var.consul_datacenter
+    resource_group = var.deployment_name
+    vm_scale_set = var.deployment_name
+  }
+}
 
-
-data "template_cloudinit_config" "this" {
+data template_cloudinit_config "this" {
   gzip          = true
   base64_encode = true
 
@@ -73,9 +80,7 @@ data "template_cloudinit_config" "this" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content      = templatefile("${path.module}/templates/userdata.yaml", {
-                      consul_conf = base64encode(templatefile("${path.module}/templates/config.json", {
-                        consul_datacenter = var.consul_datacenter
-                      })),
+                      consul_conf = base64encode(data.template_file.this.rendered)
                       arm_subscription_id = var.arm_subscription_id
                       arm_tenant_id = var.arm_tenant_id
                       resource_group = var.deployment_name
